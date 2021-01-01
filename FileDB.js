@@ -53,7 +53,7 @@ const store=class Store{
     createKey(key, value, time_to_live=-1){
         
       
-        
+            let millis=Date.now();
             if(time_to_live!=-1){
                 this.time_to_live = millis + this.time_to_live;
             }
