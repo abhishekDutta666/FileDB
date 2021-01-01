@@ -113,7 +113,7 @@ const store=class Store{
         if (!Object.keys(this.data).includes(key)) {
             console.log('Key does not exists')
         } else {
-            if(this.data[key][ttl]==-1 || this.data[key]["ttl"]<Date.now()){
+            if(this.data[key]["ttl"]==-1 || this.data[key]["ttl"]<Date.now()){
                 return this.data[key]["value"];
             }
             else{
@@ -128,7 +128,7 @@ const store=class Store{
             if (!Object.keys(this.data).includes(key)) {
                 console.log('Key does not exists\n');
             } else {
-                if(this.data[key][ttl]==-1 || this.data[key]["ttl"]<Date.now()){
+                if(this.data[key]["ttl"]==-1 || this.data[key]["ttl"]<Date.now()){
                     delete this.data[key];
                     fs.writeFileSync(this.dbPath, JSON.stringify(this.data), function (err) {
                         if (err) {
