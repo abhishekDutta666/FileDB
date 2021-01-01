@@ -51,10 +51,7 @@ const store=class Store{
     // };
 
     createKey(key, value, time_to_live=-1){
-        this.key = key;
-        this.value = value;
-        this.time_to_live = time_to_live;
-
+        
       
         
             if(time_to_live!=-1){
