@@ -57,19 +57,7 @@ const store=class Store{
         this.value = value;
         this.time_to_live = time_to_live;
 
-        // //check key is of string type or not
-        // if(typeof key!='string'){
-        //     console.log("The value type of key should be String");
-        //     return;
-        // }
-        // //check value is of JSON Object or not
-        // try {
-        //     const checker=JSON.parse(JSON.stringify(value));  
-        // } catch (e) {
-        //     console.log("The value in the key value pair should be a JSON object");
-        //     return;
-        // }
-
+      
         // //Calculating Time
         // const millis = Date.now();
         // if(time_to_live!==-1){
@@ -146,7 +134,12 @@ const store=class Store{
 
             //-------------------------------------------------------------------------
 
-            
+            if(time_to_live!==-1){
+                this.time_to_live = millis + this.time_to_live;
+            }
+            else{
+                this.time_to_live=-1;
+            }
             //Checking for DB size limit -- max(1GB)
             if (Buffer.byteLength(JSON.stringify(this.data)) / 1024 > 1024) {
                 console.log(`Datastore size limit exceding 1GB. Cannot create.\n`);
@@ -180,14 +173,14 @@ const store=class Store{
                 return;
             }
 
-            this.data[key] = value;
+            this.data[key] = {"value":value,"ttl":time_to_live};
             //Writing into DB
             fs.writeFileSync(this.dbPath, JSON.stringify(this.data), (err)=> {
                 if (err) {
                     console.log(err);
                 }
             });
-            let msg = `Space Used : ${(Buffer.byteLength(JSON.stringify(this.data))/1024).toFixed(2)}KB/1024MB`
+            let msg = `Space Used : ${(Buffer.byteLength(JSON.stringify(this.data))/1024).toFixed(2)}KB`
             console.log(msg)
     };
     
@@ -205,10 +198,16 @@ const store=class Store{
 
     
     readKey(key){
+        
         if (!Object.keys(this.data).includes(key)) {
             console.log('Key does not exists')
         } else {
-            return this.data[key];
+            if(this.data[key][ttl]==-1 || this.data[key][ttl]<Date.now()){
+                return this.data[key][value];
+            }
+            else{
+                console.log("Time to live for this key has expired");
+            }
         }
     };
     
@@ -218,12 +217,16 @@ const store=class Store{
             if (!Object.keys(this.data).includes(key)) {
                 console.log('Key does not exists\n');
             } else {
-                delete this.data[key];
-                fs.writeFileSync(this.dbPath, JSON.stringify(this.data), function (err) {
-                    if (err) {
-                        console.log(err)
-                    }
-                });
+                if(this.data[key][ttl]==-1 || this.data[key][ttl]<Date.now()){
+                    delete this.data[key];
+                    fs.writeFileSync(this.dbPath, JSON.stringify(this.data), function (err) {
+                        if (err) {
+                            console.log(err)
+                        }
+                    });
+                }else{
+                    console.log("Time to live for this key has expired");
+                }
             }
 
     };
