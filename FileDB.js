@@ -65,6 +65,7 @@ const store=class Store{
             }
             if (key == null) {
                 console.log('Key should not be null\n');
+                return;
             }
             if (typeof key != 'string') {
                 console.log('The type of key should be string\n');
