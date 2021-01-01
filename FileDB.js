@@ -57,12 +57,10 @@ const store=class Store{
 
       
         
-            if(time_to_live!==-1){
+            if(time_to_live!=-1){
                 this.time_to_live = millis + this.time_to_live;
             }
-            else{
-                this.time_to_live=-1;
-            }
+            
             //Checking for DB size limit -- max(1GB)
             if (Buffer.byteLength(JSON.stringify(this.data)) / (1024*1024*1024) > 1) {
                 console.log(`Datastore size limit exceding 1GB. Cannot create.\n`);
